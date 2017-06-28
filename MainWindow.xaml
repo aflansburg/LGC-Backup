@@ -1,0 +1,23 @@
+﻿<Window x:Class="LGC_Backup.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LGC_Backup"
+        mc:Ignorable="d"
+        Title="LGC Backup" Height="349" Width="668" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Button x:Name="loadJobBtn" Content="Load Backup Job" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Width="114" Height="41.96" Click="loadJobBtn_Click"/>
+        <Button x:Name="newJobBtn" Content="New Backup Job" HorizontalAlignment="Left" Margin="10,124.04,0,0" VerticalAlignment="Top" Width="114" Height="41.96" Click="newJobBtn_Click"/>
+        <ListView x:Name="listView" Height="217" Margin="156,36.28,42,0" VerticalAlignment="Top" d:LayoutOverrides="HorizontalAlignment">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="156,10,0,0" TextWrapping="Wrap" Text="Currently Loaded Job" VerticalAlignment="Top" FontSize="16"/>
+        <Button x:Name="newJobBtn_Copy" Content="     Generate &#xD;&#xA;One-Click Script" HorizontalAlignment="Left" Margin="10,211.32,0,0" VerticalAlignment="Top" Width="114" Height="41.96"/>
+        <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="26.277,258.28,0,-8.24" TextWrapping="Wrap" Width="76.783" TextAlignment="Center" Height="69.96" VerticalAlignment="Top"><Run Text="(For currently "/><LineBreak/><Run Text="loaded job)"/></TextBlock>
+    </Grid>
+</Window>
