@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Alphaleonis.Win32.Vss;
 
 
-namespace LGCBackupService
+namespace LGCBackup
 {
     //this class works with Snapshots
     class Snapshot : IDisposable

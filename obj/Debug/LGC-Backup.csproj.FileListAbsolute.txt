@@ -27,3 +27,6 @@ S:\Projects\LGC-Backup\LGC-Backup\obj\Debug\LGC-Backup.exe
 S:\Projects\LGC-Backup\LGC-Backup\obj\Debug\LGC-Backup.pdb
 S:\Projects\LGC-Backup\LGC-Backup\obj\Debug\NewBackupWindow.g.cs
 S:\Projects\LGC-Backup\LGC-Backup\obj\Debug\NewBackupWindow.baml
+S:\Projects\LGC-Backup\LGC-Backup\bin\Debug\CommandLine.dll
+S:\Projects\LGC-Backup\LGC-Backup\bin\Debug\NDesk.Options.dll
+S:\Projects\LGC-Backup\LGC-Backup\bin\Debug\CommandLine.xml

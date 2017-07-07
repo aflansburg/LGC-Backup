@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Alphaleonis.Win32.Vss;
 using Alphaleonis.Win32.Filesystem;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
-namespace LGCBackupService
+namespace LGCBackup
 {
     public class Vss : IDisposable
     {

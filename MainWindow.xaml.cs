@@ -1,21 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
+using System.Collections.Generic;
+using System.Windows;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
-using CommandLine;
+using NDesk.Options;
 
 namespace LGC_Backup
 {
@@ -26,25 +15,122 @@ namespace LGC_Backup
     {
         public MainWindow()
         {
+            InitializeComponent();
+
             string[] args = Environment.GetCommandLineArgs();
 
-            // start here - reading command line arguments
-            
 
             if (args.Length > 1)
             {
-                // testing statements
-                //Console.WriteLine($"Command line args: {string.Join(Environment.NewLine, args.Select(s => s))}");
-                //System.Windows.MessageBox.Show($"Command line args: {string.Join(Environment.NewLine, args.Select(s => s))}");
-                
-                //parse arguments to dictionary using LINQ (totally unecessary)
-                //var argDict = args.Select((index, value) => new {index, value})
-                //                 .ToDictionary(pair => pair.value, pair => pair.index);
-                // for testing
-                // System.Windows.MessageBox.Show($"Command line args: {argDict[1]}");
-            }
+                // hide application window
+                Application.Current.MainWindow.Hide();
 
-            InitializeComponent();
+                string data = null;
+                bool show_help = false;
+                int quiet = 0;
+
+                var p = new OptionSet()
+                {
+                    {"f|file=", "the path to the job file to execute", v => data = v},
+                    {"q|quiet", "run in windowless mode", v => ++quiet},
+                    {"h|?|help", "display help", v => show_help = v != null},
+                };
+
+
+
+                //extra arguments
+                List<string> extra;
+                try
+                {
+                    extra = p.Parse(args);
+                    //could do something with arguments here
+                }
+                catch (OptionException e)
+                {
+                    ConsoleManager.Show();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Try -help for more info.");
+                }
+
+                if (quiet == 0 && !show_help)
+                {
+                    ConsoleManager.Show();
+                    Console.WriteLine("Opening interface.");
+                }
+                else if (quiet == 1 && data != null)
+                {
+                    try
+                    {
+                        ConsoleManager.Show();
+                        Console.WriteLine($"Running headless and attempting to execute job {data}");
+                        // execute backup job here
+
+                        VssHelper.StartSnapshot(data);
+
+                        // gets onley the job name from the path (i.e. minus the path)
+                        Regex regex = new Regex(@"([^\\]*)\.json");
+                        Match match = regex.Match(data);
+                        string thisJobName = match.Groups[1].Value;
+                        //Console.WriteLine("REGEX MATCH = " + thisJobName);
+
+                        var loadedJob = JobFile.ReadJobFile(data);
+
+                        // START HERE -- append info to listview control in MainWindow
+                        listView.Items.Clear();
+                        listView.Items.Add($"Backup Job: {thisJobName}");
+                        listView.Items.Add("Source directories:");
+                        foreach (string src in loadedJob.SourceDirectories)
+                        {
+                            listView.Items.Add(src);
+                        }
+                        listView.Items.Add("Destination directories:");
+                        foreach (string dst in loadedJob.DestinationDirectories)
+                        {
+                            listView.Items.Add(dst);
+                        }
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        MessageBox.Show($"Job file {data} was not found.\nCheck the file path " +
+                                        $"and the name to see if it exists\nin the current " +
+                                        $"working directory.");
+                        Console.WriteLine("Job file not found");
+                        Environment.Exit(2);
+                    }
+                }
+                else if (show_help)
+                {
+                    ConsoleManager.Show();
+                    Console.WriteLine("Showing help.");
+                    ShowHelp(p);
+                    Console.WriteLine("\nPress any key to exit.");
+                    Console.Read();
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\r\nCheck your command line parameters -- use h|?|help for usage!");
+                }
+            }
+            else
+            {
+                InitializeComponent();
+            }
+        }
+
+        private void ShowHelp(OptionSet p)
+        {
+            Console.WriteLine("Usage: lgcbackup.exe -file=[path to job file]");
+            Console.WriteLine("Run specified job file");
+            Console.WriteLine("\nUsage: -q|quiet");
+            Console.WriteLine("Run windowless - must specifiy job file");
+            Console.WriteLine("\nUsage: -h|-help|-?");
+            Console.WriteLine("Display this help information");
+            Console.WriteLine();
+            Console.WriteLine("Options:");
+            p.WriteOptionDescriptions(Console.Out);
         }
 
         private void newJobBtn_Click(object sender, RoutedEventArgs e)
@@ -65,7 +151,6 @@ namespace LGC_Backup
             if (openFileDialog.ShowDialog() == true)
             {
                 jobFileName = openFileDialog.FileName;
-                JobFile loadedJob = new JobFile();
 
                 // gets the filename from the path
                 Regex regex = new Regex(@"([^\\]*)\.json");
@@ -73,10 +158,10 @@ namespace LGC_Backup
                 string thisJobName = match.Groups[1].Value;
                 //Console.WriteLine("REGEX MATCH = " + thisJobName);
 
-                loadedJob = JobFile.ReadJobFile(jobFileName);
+                var loadedJob = JobFile.ReadJobFile(jobFileName);
                 Console.Write(jobFileName);
 
-                // START HERE -- append info to listview control in MainWindow
+                // START HERE -- append info to listview control in MainWindow -- need to make this a helper method
                 listView.Items.Clear();
                 listView.Items.Add($"Backup Job: {thisJobName}");
                 listView.Items.Add("Source directories:");
